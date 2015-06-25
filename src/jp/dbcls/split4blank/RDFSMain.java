@@ -25,12 +25,9 @@ public class RDFSMain {
      * @param args the command line arguments
      */
     
-    
     public static void main(String[] args) {
         a_filename = args[0];
         a_split = Integer.parseInt(args[1]);
-        //a_filename = "allie.rdf.nt";
-        //a_split = 5;
         a_tmptriplefile = "triples.txt";
         a_nodelistfile = "nodetmp.txt";
         System.out.println("Loading file...");
