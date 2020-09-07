@@ -1,2 +1,2 @@
 # split4blank
-java -jar -Xmx16g -Xms16g split4blank.jar targetfile numberOfFiles
+java -jar -Xmx16g -Xms16g Split4Blank.jar targetfile numberOfFiles
