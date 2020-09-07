@@ -12,7 +12,6 @@ package jp.dbcls.split4blank;
 
 
 import java.util.*;
-import java.io.*;
 
 public class RDFSMain {
 
@@ -26,6 +25,10 @@ public class RDFSMain {
      */
     
     public static void main(String[] args) {
+    	if(args.length != 2) {
+    		System.out.println("[Usage] java -jar -Xmx16g -Xms16g Split4Blank.jar <N-Triple file name to be split> <Number of generated files>");
+    		return;
+    	}
         a_filename = args[0];
         a_split = Integer.parseInt(args[1]);
         a_tmptriplefile = "triples.txt";
@@ -33,6 +36,8 @@ public class RDFSMain {
         System.out.println("Loading file...");
         BlankRDFGraph w_graph = RDFSIO.loadNTwithBlank(a_filename, a_tmptriplefile);
         System.out.println("End");
+        if ( w_graph == null)
+        	return;
         
         if ( w_graph.checkBSize(a_split) ){
             System.out.println("Writing files ...");
