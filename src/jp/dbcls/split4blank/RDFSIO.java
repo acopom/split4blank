@@ -12,6 +12,8 @@ package jp.dbcls.split4blank;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
+import org.apache.commons.io.FilenameUtils;
 
 public class RDFSIO {
         
@@ -19,11 +21,22 @@ public class RDFSIO {
         BlankRDFGraph w_rdfgraph = new BlankRDFGraph();
         File w_file = new File(p_filename);
         File w_tmp = new File(p_tmpfile);
+        BufferedReader w_br = null;
         try{
-            BufferedReader w_br = new BufferedReader(new FileReader(w_file));
+        	if(FilenameUtils.getExtension(p_filename).contentEquals("gz")) {
+        		System.out.println("gz file");
+        		InputStream fileStream = new FileInputStream(w_file);
+        		InputStream gzipStream = new GZIPInputStream(fileStream);
+        		Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+        		w_br = new BufferedReader(decoder);
+        	}else {
+        		System.out.println("plain file");
+        		w_br = new BufferedReader(new FileReader(w_file));
+        	}
             BufferedWriter w_bw = new BufferedWriter(new FileWriter(w_tmp));
             String w_buf;
             long w_count = 0;
+
             while ( (w_buf = w_br.readLine()) != null ){
                 if ( w_buf.length() == 0 ){continue;}
                 String[] w_triple = w_buf.split("[\\s]+");
@@ -47,7 +60,8 @@ public class RDFSIO {
             w_br.close();
             w_bw.close();
         }catch(IOException e){
-          System.err.println(e);
+          System.out.println(e);
+          return null;
         }
 
         return w_rdfgraph;
@@ -143,13 +157,17 @@ public class RDFSIO {
         // Preparing files for splitted data
         File[] w_files = new File[p_split];
         int w_len = String.valueOf(p_split).length();
+        File org_file = new File(p_orgfile);
         for (int i = 0 ; i < p_split; i++){
             String w_i = Integer.toString(i);
             StringBuilder w_pud = new StringBuilder("");
             for ( int j = 0 ; j < w_len - w_i.length() ; j++ ){
                 w_pud.append("0");
             }
-            w_pud.append(w_i).append("_").append(p_orgfile);
+            if(FilenameUtils.getExtension(org_file.getName()).equals("gz"))
+                w_pud.append(w_i).append("_").append(FilenameUtils.removeExtension(org_file.getName()));
+            else
+                w_pud.append(w_i).append("_").append(org_file.getName());
             w_files[i] = new File(w_pud.toString());
         }
         
@@ -212,7 +230,8 @@ public class RDFSIO {
             for ( int j = 0 ; j < w_len - w_i.length() ; j++ ){
                 w_pud.append("0");
             }
-            w_pud.append(w_i).append("_").append(p_orgfile);
+            File org_file = new File(p_orgfile);
+            w_pud.append(w_i).append("_").append(org_file.getName());
             w_files[i] = new File(w_pud.toString());
         }
         BufferedWriter[] w_bws = new BufferedWriter[p_split];

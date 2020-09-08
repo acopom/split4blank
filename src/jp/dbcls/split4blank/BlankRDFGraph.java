@@ -51,7 +51,7 @@ public class BlankRDFGraph extends MyRDFGraph{
         }*/
         for ( int i = 0; i < a_bnodes.size(); i++ ){
             a_bedges.add(new LinkedList<BEdge>());
-            Integer w_bn = a_bnodes.get(i);
+            //Integer w_bn = a_bnodes.get(i);
             //w_b[w_bn] = true;
         }
         for ( int i = 0 ; i < a_edges.size(); i++ ){
