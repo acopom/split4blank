@@ -19,6 +19,7 @@ public class RDFSMain {
     static String a_filename = null;
     static String a_tmptriplefile = null;
     static String a_nodelistfile = null;
+    static Boolean gz_enabled = false;
     
     /**
      * @param args the command line arguments
@@ -31,8 +32,8 @@ public class RDFSMain {
     	}
         a_filename = args[0];
         a_split = Integer.parseInt(args[1]);
-        a_tmptriplefile = "triples.txt";
-        a_nodelistfile = "nodetmp.txt";
+        a_tmptriplefile = "triples.txt.gz";
+        a_nodelistfile = "nodetmp.txt.gz";
         System.out.println("Loading file...");
         BlankRDFGraph w_graph = RDFSIO.loadNTwithBlank(a_filename, a_tmptriplefile);
         System.out.println("End");

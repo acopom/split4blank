@@ -208,7 +208,7 @@ public class BlankRDFGraph extends MyRDFGraph{
         List<String> w_triples = new LinkedList<String>();
         //ListIterator<Integer> w_cit = p_bag.getClusters().listIterator();
         Set<String> w_nodes = new HashSet<String>(); // (int s node id)-(int pred id)-(int o node id)
-        HashSet<Integer> w_bags = new HashSet(p_bag.getClusters());        
+        HashSet<Integer> w_bags = new HashSet<Integer>(p_bag.getClusters());        
         for ( int i = 0 ; i < a_bcluster.length; i++ ){ 
             if ( w_bags.contains(a_bcluster[i]) ){
                 Integer w_node = a_bnodes.get(i);              

@@ -13,6 +13,7 @@ package jp.dbcls.split4blank;
 import java.io.*;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import org.apache.commons.io.FilenameUtils;
 
 public class RDFSIO {
@@ -29,11 +30,15 @@ public class RDFSIO {
         		InputStream gzipStream = new GZIPInputStream(fileStream);
         		Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
         		w_br = new BufferedReader(decoder);
+        		RDFSMain.gz_enabled = true;
         	}else {
         		System.out.println("plain file");
         		w_br = new BufferedReader(new FileReader(w_file));
         	}
-            BufferedWriter w_bw = new BufferedWriter(new FileWriter(w_tmp));
+        	OutputStream fileStream = new FileOutputStream(w_tmp);
+        	OutputStream gzipStream = new GZIPOutputStream(fileStream);
+        	Writer encoder = new OutputStreamWriter(gzipStream, "UTF-8");
+        	BufferedWriter w_bw = new BufferedWriter(encoder);
             String w_buf;
             long w_count = 0;
 
@@ -123,7 +128,10 @@ public class RDFSIO {
     public static void writeNodes(MyRDFGraph p_graph, String p_filename){
         File w_file = new File(p_filename);
         try{
-            BufferedWriter w_bw = new BufferedWriter(new FileWriter(w_file));
+        	OutputStream fileStream = new FileOutputStream(w_file);
+        	OutputStream gzipStream = new GZIPOutputStream(fileStream);
+        	Writer encoder = new OutputStreamWriter(gzipStream, "UTF-8");
+        	BufferedWriter w_bw = new BufferedWriter(encoder);
             for (int i = 0; i < p_graph.a_nodes.size(); i++ ){
                 w_bw.write(p_graph.a_nodes.get(i));
                 w_bw.newLine();
@@ -137,7 +145,10 @@ public class RDFSIO {
     public static void loadNodes(MyRDFGraph p_graph, String p_filename){
         File w_file = new File(p_filename);
         try{
-            BufferedReader w_br = new BufferedReader(new FileReader(w_file));
+    		InputStream fileStream = new FileInputStream(w_file);
+    		InputStream gzipStream = new GZIPInputStream(fileStream);
+    		Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+    		BufferedReader w_br = new BufferedReader(decoder);
             String w_buf;            
             while ( (w_buf = w_br.readLine()) != null ){
                 p_graph.a_nodes.add(w_buf);
@@ -164,10 +175,7 @@ public class RDFSIO {
             for ( int j = 0 ; j < w_len - w_i.length() ; j++ ){
                 w_pud.append("0");
             }
-            if(FilenameUtils.getExtension(org_file.getName()).equals("gz"))
-                w_pud.append(w_i).append("_").append(FilenameUtils.removeExtension(org_file.getName()));
-            else
-                w_pud.append(w_i).append("_").append(org_file.getName());
+            w_pud.append(w_i).append("_").append(org_file.getName());
             w_files[i] = new File(w_pud.toString());
         }
         
@@ -177,7 +185,14 @@ public class RDFSIO {
             // pack for triples with blank nodes
             ListIterator<ClusterBag> w_bit = p_bags.listIterator();            
             for ( int i = 0; i < p_split; i++ ){
-                w_bws[i] = new BufferedWriter(new FileWriter(w_files[i]));
+            	if(RDFSMain.gz_enabled) {
+            		OutputStream fileStream = new FileOutputStream(w_files[i]);
+            		OutputStream gzipStream = new GZIPOutputStream(fileStream);
+            		Writer encoder = new OutputStreamWriter(gzipStream, "UTF-8");
+            		w_bws[i] = new BufferedWriter(encoder);
+            	}else {
+            		w_bws[i] = new BufferedWriter(new FileWriter(w_files[i]));
+            	}
                 ClusterBag w_bag = w_bit.next(); 
                 if ( w_bag.getNTriples() < ((double) p_graph.a_ntriples / (double) p_split - 1) ){
                     w_under.add(i);
@@ -196,7 +211,11 @@ public class RDFSIO {
             System.out.println("Start padding...");            
             // pack for the other triples            
             ListIterator<Integer> w_it = w_under.listIterator();
-            BufferedReader w_br = new BufferedReader(new FileReader(new File(p_triplefile)));
+
+    		InputStream fileStream = new FileInputStream(new File(p_triplefile));
+    		InputStream gzipStream = new GZIPInputStream(fileStream);
+    		Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+    		BufferedReader w_br = new BufferedReader(decoder);
             String w_buf;
             int w_th = (int) Math.ceil(((double)( p_graph.a_ntriples)) / ((double)p_split));
             while( w_it.hasNext() ){
@@ -236,7 +255,10 @@ public class RDFSIO {
         }
         BufferedWriter[] w_bws = new BufferedWriter[p_split];
         try{
-            BufferedReader w_br = new BufferedReader(new FileReader(new File(p_triplefile)));
+    		InputStream fileStream = new FileInputStream(new File(p_triplefile));
+    		InputStream gzipStream = new GZIPInputStream(fileStream);
+    		Reader decoder = new InputStreamReader(gzipStream, "UTF-8");
+    		BufferedReader w_br = new BufferedReader(decoder);
             // pack for triples with blank nodes
             for (int i = 0 ; i < p_split; i++ ){
                 w_bws[i] = new BufferedWriter(new FileWriter(w_files[i]));
