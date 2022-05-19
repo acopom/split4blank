@@ -44,7 +44,7 @@ public class RDFSIO {
 
             while ( (w_buf = w_br.readLine()) != null ){
                 if ( w_buf.length() == 0 ){continue;}
-                String[] w_triple = w_buf.split("[\\s]+");
+                String[] w_triple = w_buf.split("[\\s]+",3);
                 if ( w_triple.length < 3 ){ continue; }
                 String w_o = w_triple[2];
                 if ( w_triple[2].charAt(w_triple[2].length() - 1) == '.' ){
